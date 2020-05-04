@@ -1172,6 +1172,10 @@ endif ()
 
 set(export_name "cryptopp-targets")
 
+if(ANDROID)
+  install(TARGETS cpufeatures EXPORT ${export_name})
+endif()
+
 # Runtime package
 if (BUILD_SHARED)
   export(TARGETS cryptopp-shared FILE ${export_name}.cmake )
