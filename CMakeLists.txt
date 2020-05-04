@@ -1041,7 +1041,7 @@ if (BUILD_STATIC)
   endif ()
 
   if(ANDROID)
-    target_include_directories(cryptopp-static PRIVATE ${ANDROID_NDK}/sources/android/cpufeatures)
+    target_include_directories(cryptopp-static PUBLIC ${ANDROID_NDK}/sources/android/cpufeatures)
   endif()
 endif ()
 
@@ -1055,7 +1055,7 @@ if (BUILD_SHARED)
   endif ()
 
   if(ANDROID)
-    target_include_directories(cryptopp-shared PRIVATE ${ANDROID_NDK}/sources/android/cpufeatures)
+    target_include_directories(cryptopp-shared PUBLIC ${ANDROID_NDK}/sources/android/cpufeatures)
   endif()
 endif ()
 
