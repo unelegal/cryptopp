@@ -508,6 +508,12 @@ endif ()
 # Library headers
 file(GLOB cryptopp_HEADERS ${SRC_DIR}/*.h)
 
+if(ANDROID)
+  list(APPEND cryptopp_HEADERS
+    ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.h
+  )
+endif()
+
 # Remove headers used to build test suite
 list(REMOVE_ITEM cryptopp_HEADERS
     ${SRC_DIR}/bench.h
@@ -584,6 +590,13 @@ if (MSVC AND NOT DISABLE_ASM)
     set_source_files_properties(${cryptopp_SOURCES_ASM} PROPERTIES LANGUAGE ASM_MASM)
   endif ()
 endif ()
+
+# Android fix
+if(ANDROID)
+  list(APPEND cryptopp_SOURCES
+    ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c
+    )
+endif()
 
 #============================================================================
 # Architecture flags
@@ -1021,16 +1034,6 @@ else ()
     )
 endif ()
 
-# Android fix
-if(ANDROID)
-  set(cryptopp_android_sources
-    ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c
-  )
-  list(APPEND cryptopp_LIBRARY_SOURCES
-    ${cryptopp_android_sources}
-    )
-endif()
-
 if (BUILD_STATIC)
   add_library(cryptopp-static STATIC ${cryptopp_LIBRARY_SOURCES})
   cryptopp_target_compile_properties(cryptopp-static)
@@ -1041,7 +1044,7 @@ if (BUILD_STATIC)
   endif ()
 
   if(ANDROID)
-    target_include_directories(cryptopp-static PUBLIC ${ANDROID_NDK}/sources/android/cpufeatures)
+    target_include_directories(cryptopp-static PUBLIC "${ANDROID_NDK}/sources/android/cpufeatures")
   endif()
 endif ()
 
@@ -1055,7 +1058,7 @@ if (BUILD_SHARED)
   endif ()
 
   if(ANDROID)
-    target_include_directories(cryptopp-shared PUBLIC ${ANDROID_NDK}/sources/android/cpufeatures)
+    target_include_directories(cryptopp-shared PUBLIC "${ANDROID_NDK}/sources/android/cpufeatures")
   endif()
 endif ()
 
