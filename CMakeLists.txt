@@ -43,9 +43,6 @@ else ()
   endif ()
 endif ()
 
-## Android Fix
-include(cmake/AndroidNdkModules.cmake)
-
 # Need to set SRC_DIR manually after removing the Python library code.
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -1024,6 +1021,16 @@ else ()
     )
 endif ()
 
+# Android fix
+if(ANDROID)
+  set(cryptopp_android_sources
+    ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c
+  )
+  list(APPEND cryptopp_LIBRARY_SOURCES
+    ${cryptopp_android_sources}
+    )
+endif()
+
 if (BUILD_STATIC)
   add_library(cryptopp-static STATIC ${cryptopp_LIBRARY_SOURCES})
   cryptopp_target_compile_properties(cryptopp-static)
@@ -1032,6 +1039,10 @@ if (BUILD_STATIC)
   else ()
     set_target_properties(cryptopp-static PROPERTIES INCLUDE_DIRECTORIES "$<BUILD_INTERFACE:${SRC_DIR}> $<INSTALL_INTERFACE:include>")
   endif ()
+
+  if(ANDROID)
+    target_include_directories(cryptopp-static ${ANDROID_NDK}/sources/android/cpufeatures)
+  endif()
 endif ()
 
 if (BUILD_SHARED)
@@ -1042,6 +1053,10 @@ if (BUILD_SHARED)
   else ()
     set_target_properties(cryptopp-shared PROPERTIES INCLUDE_DIRECTORIES "$<BUILD_INTERFACE:${SRC_DIR}> $<INSTALL_INTERFACE:include>")
   endif ()
+
+  if(ANDROID)
+    target_include_directories(cryptopp-shared ${ANDROID_NDK}/sources/android/cpufeatures)
+  endif()
 endif ()
 
 # Set filenames for targets to be "cryptopp"
@@ -1103,18 +1118,6 @@ if (BUILD_SHARED)
   target_link_libraries(cryptopp-shared ${CMAKE_THREAD_LIBS_INIT})
 endif ()
 
-## Android fix
-
-if(ANDROID)
-  android_ndk_import_module_cpufeatures()
-  if (BUILD_STATIC)
-    target_link_libraries(cryptopp-static cpufeatures)
-  endif ()
-  if (BUILD_SHARED)
-    target_link_libraries(cryptopp-shared cpufeatures)
-  endif ()
-endif()
-
 #============================================================================
 # Tests
 #============================================================================
@@ -1171,11 +1174,6 @@ endif ()
 #============================================================================
 
 set(export_name "cryptopp-targets")
-
-if(ANDROID)
-  export(TARGETS cpufeatures FILE ${export_name}.cmake )
-  install(TARGETS cpufeatures EXPORT ${export_name} DESTINATION ${CMAKE_INSTALL_LIBDIR})
-endif()
 
 # Runtime package
 if (BUILD_SHARED)
