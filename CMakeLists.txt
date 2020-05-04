@@ -1174,6 +1174,7 @@ set(export_name "cryptopp-targets")
 
 if(ANDROID)
   export(TARGETS cpufeatures FILE ${export_name}.cmake )
+  install(TARGETS cpufeatures EXPORT ${export_name} DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
 
 # Runtime package
