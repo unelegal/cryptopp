@@ -43,6 +43,9 @@ else ()
   endif ()
 endif ()
 
+## Android Fix
+include(cmake/AndroidNdkModules.cmake)
+
 # Need to set SRC_DIR manually after removing the Python library code.
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -1099,6 +1102,18 @@ endif ()
 if (BUILD_SHARED)
   target_link_libraries(cryptopp-shared ${CMAKE_THREAD_LIBS_INIT})
 endif ()
+
+## Android fix
+
+if(ANDROID)
+  android_ndk_import_module_cpufeatures()
+  if (BUILD_STATIC)
+    target_link_libraries(cryptopp-static cpufeatures)
+  endif ()
+  if (BUILD_SHARED)
+    target_link_libraries(cryptopp-shared cpufeatures)
+  endif ()
+endif()
 
 #============================================================================
 # Tests
