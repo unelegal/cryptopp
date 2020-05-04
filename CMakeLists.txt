@@ -505,14 +505,11 @@ endif ()
 # Sources & headers
 #============================================================================
 
+# Android cpu-features fix
+file(COPY ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.h DESTINATION ${SRC_DIR})
+
 # Library headers
 file(GLOB cryptopp_HEADERS ${SRC_DIR}/*.h)
-
-if(ANDROID)
-  list(APPEND cryptopp_HEADERS
-    ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.h
-  )
-endif()
 
 # Remove headers used to build test suite
 list(REMOVE_ITEM cryptopp_HEADERS
@@ -1042,10 +1039,6 @@ if (BUILD_STATIC)
   else ()
     set_target_properties(cryptopp-static PROPERTIES INCLUDE_DIRECTORIES "$<BUILD_INTERFACE:${SRC_DIR}> $<INSTALL_INTERFACE:include>")
   endif ()
-
-  if(ANDROID)
-    target_include_directories(cryptopp-static PUBLIC "${ANDROID_NDK}/sources/android/cpufeatures")
-  endif()
 endif ()
 
 if (BUILD_SHARED)
@@ -1056,10 +1049,6 @@ if (BUILD_SHARED)
   else ()
     set_target_properties(cryptopp-shared PROPERTIES INCLUDE_DIRECTORIES "$<BUILD_INTERFACE:${SRC_DIR}> $<INSTALL_INTERFACE:include>")
   endif ()
-
-  if(ANDROID)
-    target_include_directories(cryptopp-shared PUBLIC "${ANDROID_NDK}/sources/android/cpufeatures")
-  endif()
 endif ()
 
 # Set filenames for targets to be "cryptopp"
