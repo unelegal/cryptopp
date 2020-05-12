@@ -735,7 +735,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
     # Should work
     if(ANDROID)
       set(CRYPTOPP_ARMV8A_ASIMD 1)
-      set(CRYPTOPP_ARMV8A_CRC 1)
+      # crc_simd doesn't compile for some reason
+      set(CRYPTOPP_ARMV8A_CRC 0)
       set(CRYPTOPP_ARMV8A_CRYPTO 1)
     endif()
 
