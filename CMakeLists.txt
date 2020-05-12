@@ -290,23 +290,37 @@ function(DumpMachine output pattern)
 
 endfunction(DumpMachine)
 
-# Thansk to Anonimal for MinGW; see http://github.com/weidai11/cryptopp/issues/466
-DumpMachine(CRYPTOPP_AMD64 "amd64|x86_64")
-DumpMachine(CRYPTOPP_I386 "i.86")
-DumpMachine(CRYPTOPP_MINGW32 "\\<mingw32\\>")
-DumpMachine(CRYPTOPP_MINGW64 "w64-mingw32|mingw64")
-DumpMachine(CRYPTOPP_X32 "x32")
-DumpMachine(CRYPTOPP_AARCH32 "Aarch32")
-DumpMachine(CRYPTOPP_AARCH64 "Aarch64")
-DumpMachine(CRYPTOPP_ARMHF "armhf|arm7l|eabihf")
-DumpMachine(CRYPTOPP_ARM "\\<arm\\>")
+if(ANDROID)
+  if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
+    set(CRYPTOPP_ARM 1)
+  elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
+    set(CRYPTOPP_AARCH64 1)
+  elseif(${ANDROID_ABI} STREQUAL "x86")
+    set(CRYPTOPP_I386 1)
+    set(CRYPTOPP_X32 1)
+  elseif(${ANDROID_ABI} STREQUAL "x86_64")
+    set(CRYPTOPP_AMD64 1)
+  endif()
+else()
 
-# Detecting PowerPC is only good with GCC. IBM XLC compiler is
-# a little different and I don't know how to ask to the triplet
-# XLC is targeting. Below we punt by setting CRYPTOPP_POWERPC64
-# if we detect the compiler is XLC.
-DumpMachine(CRYPTOPP_POWERPC "ppc|powerpc")
-DumpMachine(CRYPTOPP_POWERPC64 "ppc64")
+  # Thansk to Anonimal for MinGW; see http://github.com/weidai11/cryptopp/issues/466
+  DumpMachine(CRYPTOPP_AMD64 "amd64|x86_64")
+  DumpMachine(CRYPTOPP_I386 "i.86")
+  DumpMachine(CRYPTOPP_MINGW32 "\\<mingw32\\>")
+  DumpMachine(CRYPTOPP_MINGW64 "w64-mingw32|mingw64")
+  DumpMachine(CRYPTOPP_X32 "x32")
+  DumpMachine(CRYPTOPP_AARCH32 "Aarch32")
+  DumpMachine(CRYPTOPP_AARCH64 "Aarch64")
+  DumpMachine(CRYPTOPP_ARMHF "armhf|arm7l|eabihf")
+  DumpMachine(CRYPTOPP_ARM "\\<arm\\>")
+
+  # Detecting PowerPC is only good with GCC. IBM XLC compiler is
+  # a little different and I don't know how to ask to the triplet
+  # XLC is targeting. Below we punt by setting CRYPTOPP_POWERPC64
+  # if we detect the compiler is XLC.
+  DumpMachine(CRYPTOPP_POWERPC "ppc|powerpc")
+  DumpMachine(CRYPTOPP_POWERPC64 "ppc64")
+endif()
 
 ###############################################################################
 
@@ -506,7 +520,9 @@ endif ()
 #============================================================================
 
 # Android cpu-features fix
-file(COPY ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.h DESTINATION ${SRC_DIR})
+if(ANDROID)
+  file(COPY ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.h DESTINATION ${SRC_DIR})
+endif()
 
 # Library headers
 file(GLOB cryptopp_HEADERS ${SRC_DIR}/*.h)
