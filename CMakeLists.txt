@@ -644,6 +644,20 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
     CheckCompileLinkOption("" CRYPTOPP_MIXED_ASM
                            "${TEST_PROG_DIR}/test_mixed_asm.cxx")
 
+    # Just assuming here since we're cross-compiling most likely
+    if(ANDROID)
+      if(CRYPTOPP_I386 OR CRYPTOPP_X32)
+        set(CRYPTOPP_IA32_SSE2 1)
+        set(CRYPTOPP_IA32_SSSE3 1)
+        set(CRYPTOPP_IA32_SSE41 0)
+        set(CRYPTOPP_IA32_SSE42 0)
+        set(CRYPTOPP_IA32_AES 0)
+        set(CRYPTOPP_IA32_AVX 0)
+        set(CRYPTOPP_IA32_AVX2 0)
+        set(CRYPTOPP_IA32_SHA 0)
+      endif()
+    endif()
+
     # https://github.com/weidai11/cryptopp/issues/756
     if (NOT CRYPTOPP_MIXED_ASM)
       list(APPEND CRYPTOPP_COMPILE_OPTIONS "-DCRYPTOPP_DISABLE_MIXED_ASM")
@@ -716,6 +730,11 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
     CheckCompileOption("-march=armv8-a+crypto" CRYPTOPP_ARMV8A_CRYPTO)
     CheckCompileOption("-march=armv8-a" CRYPTOPP_ARMV8A_NATIVE)
 
+    # Should work
+    if(ANDROID)
+      set(CRYPTOPP_ARMV8A_ASIMD 1)
+    endif()
+
     if (CRYPTOPP_ARMV8A_ASIMD)
       set_source_files_properties(${SRC_DIR}/aria_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv8-a")
       set_source_files_properties(${SRC_DIR}/blake2s_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv8-a")
@@ -751,6 +770,11 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
                            "${TEST_PROG_DIR}/test_arm_neon.cxx")
     CheckCompileLinkOption("-march=armv7-a -mfloat-abi=softfp -mfpu=neon" CRYPTOPP_ARMV7A_SOFTFP
                            "${TEST_PROG_DIR}/test_arm_neon.cxx")
+
+    # Enforced by NDK
+    if(ANDROID)
+      set(CRYPTOPP_ARMV7A_SOFTFP 1)
+    endif()
 
     if (CRYPTOPP_ARMV7A_HARD)
       set(CRYPTOPP_ARMV7A_FLAGS "-march=armv7-a -mfloat-abi=hard -mfpu=neon")
