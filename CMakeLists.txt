@@ -155,8 +155,10 @@ target_compile_definitions(cryptopp-obj PUBLIC CRYPTOPP_DISABLE_CLMUL)
 
 if(BUILD_STATIC)
 	add_library(cryptopp-static STATIC $<TARGET_OBJECTS:cryptopp-obj>)
+	target_include_directories(cryptopp-static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
 if(BUILD_SHARED)
 	add_library(cryptopp-shared SHARED $<TARGET_OBJECTS:cryptopp-obj>)
+	target_include_directories(cryptopp-shared PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
